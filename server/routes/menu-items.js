@@ -29,7 +29,6 @@ menuItemRouter.param('menuItemId', (req,res,next,menuItemId)=> {
 
 // const validity checks
 const isValidMenuItem = (req,res,next) => {
-    debugger;
     const menuItem = req.body.menuItem;
     if(!menuItem.name || !menuItem.description || !menuItem.inventory || !menuItem.price){
         res.sendStatus(400);
