@@ -5,11 +5,11 @@ const menuRouter = require('express').Router();
 const sqlite3 = require('sqlite3');
 const db = new sqlite3.Database(process.env.TEST_DATABASE || './database.sqlite');
 
-// ***REQUEST HANDLING***
 // Middleware
 // import nested router from  menuItems
-// const issueRouter = require('./ menuItems');
-// menuRouter.use('/:menuId/ menuItems', issueRouter);
+const menuItemRouter = require('./menu-items');
+menuRouter.use('/:menuId/menu-items', menuItemRouter);
+
 // param handling
 menuRouter.param('menuId', (req,res,next,menuId)=> {
     db.get(`SELECT * FROM Menu
@@ -38,6 +38,8 @@ const isValidMenu = (req,res,next) => {
         next();
     }
 }
+
+// ***REQUEST HANDLING***
 
 // get all menu
 menuRouter.get('/',(req,res,next)=>{
@@ -117,14 +119,12 @@ menuRouter.put('/:menuId', isValidMenu, (req,res,next)=>{
 
 // needs work. Does not yet pass all tests
 menuRouter.delete('/:menuId',(req,res,next)=>{
-    debugger;
     db.all(`SELECT COUNT(*) as count FROM MenuItem
         WHERE menu_id = $menuId`,
         {
             $menuId   :   req.params.menuId
         },
         (err, menuItems)=>{
-            debugger;
             const items = menuItems[0].count;
             if(items > 0){
                 res.sendStatus(400);
@@ -137,11 +137,9 @@ menuRouter.delete('/:menuId',(req,res,next)=>{
                 },
                 (err)=>{
                     if(err){
-                        debugger;
                         res.sendStatus(400); 
                         return;
                     } else {
-                        debugger;
                         res.sendStatus(204);
                         return;
                     }
